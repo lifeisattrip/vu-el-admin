@@ -1,4 +1,5 @@
 import { asyncRouterMap, asyncRouterUserMap, constantRouterMap } from '@/router/router'
+import { filterAllRouterItems } from '@/api/PermApi'
 
 /**
  * 通过meta.role判断是否与当前用户权限匹配
@@ -51,6 +52,9 @@ const permission = {
         let accessedRouters
         if (roles.indexOf('admin') >= 0) {
           accessedRouters = asyncRouterMap
+          var path2ObjMap = {}
+          filterAllRouterItems(asyncRouterMap, path2ObjMap)
+          console.log(path2ObjMap)
         } else {
           accessedRouters = filterAsyncRouter(asyncRouterMap, roles)
           accessedRouters = asyncRouterUserMap

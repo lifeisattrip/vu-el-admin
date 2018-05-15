@@ -1,46 +1,30 @@
 <template>
   <div class="table-container">
     <!--对话框form-->
-    <el-dialog :close-on-click-modal="false" :title="dlgAddMode?'添加 系统配置':'修改 系统配置'" :visible.sync="dlgVisible" width="35%" center>
+    <el-dialog :close-on-click-modal="false" :title="dlgAddMode?'添加角色':'修改角色'" :visible.sync="dlgVisible" width="35%" center>
       <el-form ref="formView" :model="formData" label-width="80px" :rules="validateRules">
 
-                <el-row>
-                  <el-col :span="24">
-                    <el-form-item label="配置类别" prop="section">
-                          <el-input v-model="formData.section"></el-input>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-                <el-row>
-                  <el-col :span="24">
-                    <el-form-item label="配置名" prop="confKey">
-                          <el-input v-model="formData.confKey"></el-input>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-                <el-row>
-                  <el-col :span="24">
-                    <el-form-item label="配置值" prop="confValue">
-                          <el-input v-model="formData.confValue"></el-input>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-                <el-row>
-                  <el-col :span="24">
-                    <el-form-item label="配置描述" prop="confDesc">
-                          <el-input v-model="formData.confDesc"></el-input>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-                <el-row>
-                  <el-col :span="24">
-                    <el-form-item label="值类型" prop="valueType">
-                          <el-select v-model="formData.valueType">
-                            <el-option v-for="item in mapDataType" :key="item.key" :label="item.value" :value="item.key"></el-option>
-                          </el-select>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="名称" prop="name">
+              <el-input v-model="formData.name"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="标识" prop="roleSign">
+              <el-input v-model="formData.roleSign"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="备注" prop="remark">
+              <el-input v-model="formData.remark"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dlgVisible = false">取 消</el-button>
@@ -48,12 +32,22 @@
       </span>
     </el-dialog>
 
+    <el-dialog :close-on-click-modal="false" title="分配权限" :visible.sync="roleResVisible" width="35%" center>
+      <SysResourceTree ref="resTree" :role-id="currentRowId"></SysResourceTree>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="roleResVisible = false">取 消</el-button>
+        <el-button type="primary" @click="onRoleResDlgOkClick">确 定</el-button>
+      </span>
+    </el-dialog>
     <!--主体表格-->
     <div>
       <div class="filter-wrapper">
-                    <div class="filter-item-wrapper">
-                      <el-input v-model="params.section" @keyup.enter="load" placeholder="搜配置类别"></el-input>
-                    </div>
+        <div class="filter-item-wrapper">
+          <el-input v-model="params.name" @keyup.enter="load" placeholder="搜名称"></el-input>
+        </div>
+        <div class="filter-item-wrapper">
+          <el-input v-model="params.roleSign" @keyup.enter="load" placeholder="搜标识"></el-input>
+        </div>
         <el-button type="primary" @click="load"> 查询</el-button>
       </div>
 
@@ -65,27 +59,19 @@
           <el-button type="primary" plain icon="el-icon-delete" @click="remove">删除</el-button>
         </el-button-group>
       </div>
+
+      <el-button type="primary" plain icon="el-icon-delete" @click="roleResDlg">分配权限</el-button>
     </div>
     <div class="table-wrapper">
       <el-table v-loading="listLoading" strip :data="tableData" style="width: 100%" ref="tableView"
                 highlight-current-row
                 @current-change="handleTblSelectedChange">
 
-                <el-table-column prop="id" label="编号"></el-table-column>
-                <el-table-column prop="section" label="配置类别"></el-table-column>
-                <el-table-column prop="confKey" label="配置名"></el-table-column>
-                <el-table-column prop="confValue" label="配置值"></el-table-column>
-                <el-table-column prop="confDesc" label="配置描述"></el-table-column>
-                <el-table-column prop="valueType" label="值类型">
-                  <template slot-scope="scope">
-                      <span disable-transitions
-                            class="badge badge-primary"
-                            v-for="item in mapDataType" v-if="item.key==scope.row.valueType" :key="item.key" type="success">
-                        {{item.value}}
-                      </span>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="gmtModified" label="更新时间"></el-table-column>
+        <el-table-column prop="id" label="编号"></el-table-column>
+        <el-table-column prop="name" label="名称"></el-table-column>
+        <el-table-column prop="roleSign" label="标识"></el-table-column>
+        <el-table-column prop="remark" label="备注"></el-table-column>
+        <el-table-column prop="gmtModified" label="修改时间"></el-table-column>
       </el-table>
     </div>
     <div class="page-container">
@@ -102,27 +88,33 @@
 
 <script>
   import {
-    getDataTypeMap,
-    addSysConfig,
-    listSysConfig,
-    removeSysConfig,
-    updateSysConfig
-  } from '@/api/SysConfigApi'
-  import { reload, printInfo, clearObject } from '@/utils/tool'
+    addSysRole,
+    listSysRole,
+    removeSysRole,
+    updateSysRole
+  } from '@/api/SysRoleApi'
+  import { reload, clearObject } from '@/utils/tool'
+  import { default as SysResourceTree } from '@/views/starter/perm/SysResourceTree'
 
   export default {
-    name: 'SysConfigTable',
+    name: 'SysRoleTable',
+    components: {
+      SysResourceTree
+    },
     data() {
       return {
         dlgAddMode: true,
         dlgVisible: false,
+        roleResVisible: false,
         listLoading: true,
         tableData: [],
         currentRow: null,
+        currentRowId: null,
         params: {
           pageNumber: 1,
           pageSize: 10,
-          section: undefined
+          name: undefined,
+          roleSign: undefined
         },
         pageInfo: {
           currentPage: 1,
@@ -132,13 +124,10 @@
         },
         formData: {},
 
-        mapDataType: [],
         validateRules: {
-          section: [{ required: true, message: '该项为必填项', trigger: 'change' }],
-          confKey: [{ required: true, message: '该项为必填项', trigger: 'change' }],
-          confValue: [{ required: true, message: '该项为必填项', trigger: 'change' }],
-          confDesc: [{ required: true, message: '该项为必填项', trigger: 'change' }],
-          valueType: [{ required: true, message: '该项为必填项', trigger: 'change' }]
+          name: [{ required: true, message: '该项为必填项', trigger: 'change' }],
+          roleSign: [{ required: true, message: '该项为必填项', trigger: 'change' }],
+          remark: [{ required: true, message: '该项为必填项', trigger: 'change' }]
         }
       }
     },
@@ -177,7 +166,6 @@
       },
       addDlg() {
         clearObject(this.formData)
-        this.formData.valueType = 1
         this.dlgVisible = true
         this.dlgAddMode = true
         if (this.$refs['formView']) {
@@ -185,14 +173,14 @@
         }
       },
       add() {
-        addSysConfig(this.formData).then(res => {
+        addSysRole(this.formData).then(res => {
           this.$message({ type: 'success', message: '添加成功' })
           this.dlgVisible = false
           this.load()
         })
       },
       edit() {
-        updateSysConfig(this.formData).then(res => {
+        updateSysRole(this.formData).then(res => {
           this.$message({ type: 'success', message: '修改成功' })
           this.dlgVisible = false
           this.load()
@@ -205,7 +193,7 @@
         this.$confirm('要删除该条数据, 是否继续?', '提示',
           { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
         ).then(() => {
-          removeSysConfig(this.currentRow.id).then(res => {
+          removeSysRole(this.currentRow.id).then(res => {
             this.$message({ type: 'success', message: '删除成功!' })
             this.load()
           })
@@ -223,6 +211,7 @@
       },
       handleTblSelectedChange(row) {
         this.currentRow = row
+        this.currentRowId = row.id
         console.log(row)
       },
       handleSizeChange(currentSize) {
@@ -237,19 +226,27 @@
       },
       fetchData() {
         this.listLoading = true
-        listSysConfig(this.params).then(response => {
+        listSysRole(this.params).then(response => {
           this.tableData = response.data
           this.pageInfo.total = response.total
           this.listLoading = false
         }).catch(error => {
+          this.listLoading = false
           console.log(error)
         })
       },
       fetchConstData() {
-        getDataTypeMap().then(res => {
-          this.mapDataType = res.data
-          printInfo(this.mapDataType)
-        })
+      },
+      roleResDlg() {
+        if (!this.hasRowSelected()) {
+          return
+        }
+        this.roleResVisible = true
+        this.$refs.resTree.fetchData()
+      },
+      onRoleResDlgOkClick() {
+        this.$refs.resTree.updateRoleResIds()
+        this.roleResVisible = false
       }
     },
     created() {

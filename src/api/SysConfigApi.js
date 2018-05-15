@@ -1,6 +1,7 @@
 import request from '@/utils/request'
 
 export function removeSysConfig(id) {
+  debugger
   const ids = [id]
   return request({
     url: '/api/sysConfig/remove',

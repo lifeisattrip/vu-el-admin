@@ -81,8 +81,8 @@
 
 <script>
 import { reload } from '../../utils/tool'
-import { getGroupMap } from '../../api/user_list'
-import { getJobDescMap, getPositionMap, getUserMap } from '@/api/user_list'
+import { getGroupMap } from '../../api/SysUserApi'
+import { getJobDescMap, getPositionMap, getUserMap } from '@/api/SysUserApi'
 import {
   addObjRelation,
   getObjRelationMap,

@@ -73,7 +73,7 @@
 <script>
 import { getUserInfo, saveUserInfo } from '../api/user_info'
 import { popDialogResult } from '../utils/dialog'
-import { getGroupMap, getJobDescMap, getPositionMap } from '@/api/user_list'
+import { getGroupMap, getJobDescMap, getPositionMap } from '@/api/SysUserApi'
 import { printInfo } from '@/utils/tool'
 
 export default {

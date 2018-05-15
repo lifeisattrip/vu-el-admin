@@ -62,8 +62,6 @@
 
 <script>
 
-import { getDashBoardNews, getDashBoardSurveyCase } from '@/api/dashboard'
-
 export default {
   name: 'dashboard',
   data() {
@@ -79,13 +77,6 @@ export default {
   methods: {
     fetchData() {
       this.listLoading = true
-      getDashBoardNews().then(response => {
-        this.news = response.data
-        getDashBoardSurveyCase().then(response => {
-          this.cases = response.data
-          this.listLoading = false
-        })
-      })
     }
   }
 }

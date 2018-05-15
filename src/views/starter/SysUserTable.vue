@@ -31,9 +31,9 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="权限" prop="userRole">
-              <el-select v-model="user.userRole">
-                <el-option v-for="(val,key) in dic_user_role" :key="key" :label="val"
-                           :value="key"></el-option>
+              <el-select v-model="user.roleGroupId">
+                <el-option v-for="item in mapGroupName" :key="item.key" :label="item.value"
+                           :value="item.key"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -77,11 +77,11 @@
         <el-table-column prop="realName" label="姓名"></el-table-column>
         <el-table-column prop="username" label="用户名"></el-table-column>
         <el-table-column prop="mobile" label="手机号"></el-table-column>
-        <el-table-column prop="userRole" label="用户权限">
+        <el-table-column prop="roleGroupId" label="用户权限">
           <template slot-scope="scope">
             <span class="badge badge-secondary"
-                  v-for="(val,key) in dic_user_role" v-if="key==scope.row.userRole" :key="key">
-            {{val}}
+                  v-for="item in mapGroupName" v-if="item.key===scope.row.roleGroupId" :key="item.key">
+            {{item.value}}
           </span>
           </template>
         </el-table-column>
@@ -106,10 +106,11 @@ import {
   removeUser,
   updatePassword,
   updateUser
-} from '@/api/user_list'
+} from '@/api/SysUserApi'
 import { reload } from '@/utils/tool'
-import { getNormalRoleId } from '@/api/user_list'
+import { getNormalRoleId } from '@/api/SysUserApi'
 import { printInfo } from '@/utils/tool'
+import { getRoleGroupNameMap } from '@/api/SysUserApi'
 
 export default {
   name: 'user_list',
@@ -132,7 +133,7 @@ export default {
         total: 0
       },
       user: {},
-      dic_user_role: {},
+      mapGroupName: {},
       validateRules: {
         username: [{ required: true, message: '该项为必填项', trigger: 'change' }],
         password: [{ required: true, message: '该项为必填项', trigger: 'change' }],
@@ -235,7 +236,7 @@ export default {
         inputPattern: /[a-z,A-Z,0-9]{4,10}/, inputErrorMessage: '密码为4位到8位字母或数字'
       }).then(({ value }) => {
         const user = {}
-        user.userId = this.currentRow.userId
+        user.id = this.currentRow.id
         user.password = value
         updatePassword(user).then(res => {
           this.$message({
@@ -281,6 +282,10 @@ export default {
       })
     },
     fetchConstData() {
+      getRoleGroupNameMap().then(res => {
+        this.mapGroupName = res.data
+        printInfo(this.mapGroupName)
+      })
     }
   },
   created() {

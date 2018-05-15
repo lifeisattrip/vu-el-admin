@@ -44,7 +44,7 @@ export const asyncRouterUserMap = [
 ]
 export const asyncRouterMap = [{
   path: '/system',
-  redirect: '/system/users',
+  redirect: '/system/user',
   name: 'System',
   component: Layout,
   meta: { title: '系统管理', icon: 'example' },
@@ -60,6 +60,42 @@ export const asyncRouterMap = [{
       name: 'Config',
       component: () => import('@/views/starter/SysConfigTable'),
       meta: { title: '配置管理', icon: 'people' }
+    },
+    {
+      path: 'resource',
+      name: 'Resource',
+      component: () => import('@/views/starter/perm/SysResourceTable'),
+      meta: { title: '权限资源', icon: 'people' }
+    },
+    {
+      path: 'role',
+      name: 'Role',
+      component: () => import('@/views/starter/perm/SysRoleTable'),
+      meta: { title: '角色管理', icon: 'people' }
+    },
+    {
+      path: 'roleGroup',
+      name: 'RoleGroup',
+      component: () => import('@/views/starter/perm/SysRoleGroupTable'),
+      meta: { title: '角色组', icon: 'people' }
+    },
+    {
+      path: 'log',
+      name: 'Log',
+      component: () => import('@/views/starter/SysLogTable'),
+      meta: { title: '系统日志', icon: 'people' }
+    },
+    {
+      path: 'task',
+      name: 'Task',
+      component: () => import('@/views/starter/QuartzJobTable'),
+      meta: { title: '定时任务', icon: 'people' }
+    },
+    {
+      path: 'test',
+      name: 'Test',
+      component: () => import('@/views/starter/perm/SysResourceTree'),
+      meta: { title: 'Test', icon: 'people' }
     }
   ]
 }, { path: '*', redirect: '/404', hidden: true }

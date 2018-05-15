@@ -47,77 +47,79 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import Breadcrumb from '@/components/Breadcrumb'
-import Hamburger from '@/components/Hamburger'
-import { updateSelfPassword } from '@/api/user_info'
-import { clearObject } from '@/utils/tool'
+  import { mapGetters } from 'vuex'
+  import Breadcrumb from '@/components/Breadcrumb'
+  import Hamburger from '@/components/Hamburger'
+  import { updateSelfPassword } from '@/api/UserInfoApi'
+  import { clearObject } from '@/utils/tool'
 
-export default {
+  export default {
 
-  data() {
-    return {
-      dlgVisible: false,
-      dataForm: {
-        oldPsw: undefined,
-        newPsw: undefined,
-        newConfirmPsw: undefined
+    data() {
+      return {
+        dlgVisible: false,
+        dataForm: {
+          oldPsw: undefined,
+          newPsw: undefined,
+          newConfirmPsw: undefined
+        },
+        validateRules: {
+          oldPsw: [{ required: true, message: '该项为必填项', trigger: 'change' }],
+          newPsw: [{ required: true, message: '该项为必填项', trigger: 'change' }],
+          newConfirmPsw: [{ required: true, message: '该项为必填项', trigger: 'change' }]
+        }
+      }
+    },
+    components: {
+      Breadcrumb,
+      Hamburger
+    },
+    computed: {
+      ...mapGetters([
+        'sidebar',
+        'avatar'
+      ])
+    },
+    mounted() {
+      clearObject(this.dataForm)
+    },
+    methods: {
+      edit() {
+        updateSelfPassword(this.dataForm).then(res => {
+          if (res.code === 0) {
+            this.$message({ type: 'success', message: res.msg })
+            this.dlgVisible = false
+          }
+        })
       },
-      validateRules: {
-        oldPsw: [{ required: true, message: '该项为必填项', trigger: 'change' }],
-        newPsw: [{ required: true, message: '该项为必填项', trigger: 'change' }],
-        newConfirmPsw: [{ required: true, message: '该项为必填项', trigger: 'change' }]
+      changePsw() {
+        this.$refs['dataForm'].validate((valid) => {
+          if (valid) {
+            if (this.dataForm.newPsw !== this.dataForm.newConfirmPsw) {
+              this.$message({ type: 'warning', message: '新密码输入不一致，请重新输入。' })
+              return
+            }
+            if (this.dataForm.newPsw === this.dataForm.oldPsw) {
+              this.$message({ type: 'warning', message: '新旧密码一样，请重新输入。' })
+              return
+            }
+            this.edit()
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
+      },
+      toggleSideBar() {
+        this.$store.dispatch('ToggleSideBar')
+      },
+      logout() {
+        this.$store.dispatch('LogOut').then(() => {
+          location.reload() // 为了重新实例化vue-router对象 避免bug
+        })
       }
     }
-  },
-  components: {
-    Breadcrumb,
-    Hamburger
-  },
-  computed: {
-    ...mapGetters([
-      'sidebar',
-      'avatar'
-    ])
-  },
-  methods: {
-    edit() {
-      updateSelfPassword(this.dataForm).then(res => {
-        if (res.code === 0) {
-          this.$message({ type: 'success', message: res.msg })
-          this.dlgVisible = false
-        }
-      })
-    },
-    changePsw() {
-      clearObject(this.dataForm)
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          if (this.dataForm.newPsw !== this.dataForm.newConfirmPsw) {
-            this.$message({ type: 'warning', message: '新密码输入不一致，请重新输入。' })
-            return
-          }
-          if (this.dataForm.newPsw === this.dataForm.oldPsw) {
-            this.$message({ type: 'warning', message: '新旧密码一样，请重新输入。' })
-            return
-          }
-          this.edit()
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
-    },
-    toggleSideBar() {
-      this.$store.dispatch('ToggleSideBar')
-    },
-    logout() {
-      this.$store.dispatch('LogOut').then(() => {
-        location.reload() // 为了重新实例化vue-router对象 避免bug
-      })
-    }
   }
-}
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>

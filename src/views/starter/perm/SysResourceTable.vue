@@ -1,46 +1,46 @@
 <template>
   <div class="table-container">
     <!--对话框form-->
-    <el-dialog :close-on-click-modal="false" :title="dlgAddMode?'添加 系统配置':'修改 系统配置'" :visible.sync="dlgVisible" width="35%" center>
+    <el-dialog :close-on-click-modal="false" :title="dlgAddMode?'添加系统资源':'修改系统资源'" :visible.sync="dlgVisible" width="35%" center>
       <el-form ref="formView" :model="formData" label-width="80px" :rules="validateRules">
 
-                <el-row>
-                  <el-col :span="24">
-                    <el-form-item label="配置类别" prop="section">
-                          <el-input v-model="formData.section"></el-input>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-                <el-row>
-                  <el-col :span="24">
-                    <el-form-item label="配置名" prop="confKey">
-                          <el-input v-model="formData.confKey"></el-input>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-                <el-row>
-                  <el-col :span="24">
-                    <el-form-item label="配置值" prop="confValue">
-                          <el-input v-model="formData.confValue"></el-input>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-                <el-row>
-                  <el-col :span="24">
-                    <el-form-item label="配置描述" prop="confDesc">
-                          <el-input v-model="formData.confDesc"></el-input>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-                <el-row>
-                  <el-col :span="24">
-                    <el-form-item label="值类型" prop="valueType">
-                          <el-select v-model="formData.valueType">
-                            <el-option v-for="item in mapDataType" :key="item.key" :label="item.value" :value="item.key"></el-option>
-                          </el-select>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="上级编号" prop="pid">
+              <el-input v-model="formData.pid"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="描述" prop="desc">
+              <el-input v-model="formData.desc"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="URL路径" prop="path">
+              <el-input v-model="formData.path"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="授权" prop="perms">
+              <el-input v-model="formData.perms"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="类型" prop="type">
+              <el-select v-model="formData.type">
+                <el-option v-for="item in mapSysResourceType" :key="item.key" :label="item.value" :value="item.key"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dlgVisible = false">取 消</el-button>
@@ -51,9 +51,12 @@
     <!--主体表格-->
     <div>
       <div class="filter-wrapper">
-                    <div class="filter-item-wrapper">
-                      <el-input v-model="params.section" @keyup.enter="load" placeholder="搜配置类别"></el-input>
-                    </div>
+        <div class="filter-item-wrapper">
+          <el-input v-model="params.desc" @keyup.enter="load" placeholder="搜描述"></el-input>
+        </div>
+        <div class="filter-item-wrapper">
+          <el-input v-model="params.path" @keyup.enter="load" placeholder="搜URL路径"></el-input>
+        </div>
         <el-button type="primary" @click="load"> 查询</el-button>
       </div>
 
@@ -71,21 +74,21 @@
                 highlight-current-row
                 @current-change="handleTblSelectedChange">
 
-                <el-table-column prop="id" label="编号"></el-table-column>
-                <el-table-column prop="section" label="配置类别"></el-table-column>
-                <el-table-column prop="confKey" label="配置名"></el-table-column>
-                <el-table-column prop="confValue" label="配置值"></el-table-column>
-                <el-table-column prop="confDesc" label="配置描述"></el-table-column>
-                <el-table-column prop="valueType" label="值类型">
-                  <template slot-scope="scope">
+        <el-table-column prop="id" label="编号"></el-table-column>
+        <el-table-column prop="pid" label="上级编号"></el-table-column>
+        <el-table-column prop="desc" label="描述"></el-table-column>
+        <el-table-column prop="path" label="URL路径"></el-table-column>
+        <el-table-column prop="perms" label="授权"></el-table-column>
+        <el-table-column prop="type" label="类型">
+          <template slot-scope="scope">
                       <span disable-transitions
                             class="badge badge-primary"
-                            v-for="item in mapDataType" v-if="item.key==scope.row.valueType" :key="item.key" type="success">
+                            v-for="item in mapSysResourceType" v-if="item.key==scope.row.type" :key="item.key" type="success">
                         {{item.value}}
                       </span>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="gmtModified" label="更新时间"></el-table-column>
+          </template>
+        </el-table-column>
+        <el-table-column prop="gmtModified" label="更新时间"></el-table-column>
       </el-table>
     </div>
     <div class="page-container">
@@ -102,16 +105,16 @@
 
 <script>
   import {
-    getDataTypeMap,
-    addSysConfig,
-    listSysConfig,
-    removeSysConfig,
-    updateSysConfig
-  } from '@/api/SysConfigApi'
+    getSysResourceTypeMap,
+    addSysResource,
+    listSysResource,
+    removeSysResource,
+    updateSysResource
+  } from '@/api/SysResourceApi'
   import { reload, printInfo, clearObject } from '@/utils/tool'
 
   export default {
-    name: 'SysConfigTable',
+    name: 'SysResourceTable',
     data() {
       return {
         dlgAddMode: true,
@@ -122,7 +125,8 @@
         params: {
           pageNumber: 1,
           pageSize: 10,
-          section: undefined
+          desc: undefined,
+          path: undefined
         },
         pageInfo: {
           currentPage: 1,
@@ -132,13 +136,13 @@
         },
         formData: {},
 
-        mapDataType: [],
+        mapSysResourceType: [],
         validateRules: {
-          section: [{ required: true, message: '该项为必填项', trigger: 'change' }],
-          confKey: [{ required: true, message: '该项为必填项', trigger: 'change' }],
-          confValue: [{ required: true, message: '该项为必填项', trigger: 'change' }],
-          confDesc: [{ required: true, message: '该项为必填项', trigger: 'change' }],
-          valueType: [{ required: true, message: '该项为必填项', trigger: 'change' }]
+          pid: [{ required: true, message: '该项为必填项', trigger: 'change' }],
+          desc: [{ required: true, message: '该项为必填项', trigger: 'change' }],
+          path: [{ required: true, message: '该项为必填项', trigger: 'change' }],
+          perms: [{ required: true, message: '该项为必填项', trigger: 'change' }],
+          type: [{ required: true, message: '该项为必填项', trigger: 'change' }]
         }
       }
     },
@@ -177,7 +181,6 @@
       },
       addDlg() {
         clearObject(this.formData)
-        this.formData.valueType = 1
         this.dlgVisible = true
         this.dlgAddMode = true
         if (this.$refs['formView']) {
@@ -185,14 +188,14 @@
         }
       },
       add() {
-        addSysConfig(this.formData).then(res => {
+        addSysResource(this.formData).then(res => {
           this.$message({ type: 'success', message: '添加成功' })
           this.dlgVisible = false
           this.load()
         })
       },
       edit() {
-        updateSysConfig(this.formData).then(res => {
+        updateSysResource(this.formData).then(res => {
           this.$message({ type: 'success', message: '修改成功' })
           this.dlgVisible = false
           this.load()
@@ -205,7 +208,7 @@
         this.$confirm('要删除该条数据, 是否继续?', '提示',
           { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
         ).then(() => {
-          removeSysConfig(this.currentRow.id).then(res => {
+          removeSysResource(this.currentRow.id).then(res => {
             this.$message({ type: 'success', message: '删除成功!' })
             this.load()
           })
@@ -237,18 +240,19 @@
       },
       fetchData() {
         this.listLoading = true
-        listSysConfig(this.params).then(response => {
+        listSysResource(this.params).then(response => {
           this.tableData = response.data
           this.pageInfo.total = response.total
           this.listLoading = false
         }).catch(error => {
+          this.listLoading = false
           console.log(error)
         })
       },
       fetchConstData() {
-        getDataTypeMap().then(res => {
-          this.mapDataType = res.data
-          printInfo(this.mapDataType)
+        getSysResourceTypeMap().then(res => {
+          this.mapSysResourceType = res.data
+          printInfo(this.mapSysResourceType)
         })
       }
     },

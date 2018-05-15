@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getUserList(params) {
   return request({
-    url: '/sys/user/list',
+    url: '/api/sysUser/list',
     method: 'post',
     data: params
   })
@@ -36,7 +36,7 @@ export function getJobDescMap() {
 
 export function getUserMap() {
   return request({
-    url: '/sys/user/userMap',
+    url: '/api/sysUser/userMap',
     method: 'get'
   })
 }
@@ -47,7 +47,7 @@ export function removeUser(userId) {
   ids.push(userId)
   debugger
   return request({
-    url: '/sys/user/remove',
+    url: '/api/sysUser/remove',
     method: 'post',
     data: ids
   })
@@ -55,7 +55,7 @@ export function removeUser(userId) {
 
 export function addUser(user) {
   return request({
-    url: '/sys/user/save',
+    url: '/api/sysUser/save',
     method: 'post',
     data: user
   })
@@ -63,7 +63,7 @@ export function addUser(user) {
 
 export function updateUser(user) {
   return request({
-    url: '/sys/user/update',
+    url: '/api/sysUser/update',
     method: 'post',
     data: user
   })
@@ -71,9 +71,15 @@ export function updateUser(user) {
 
 export function updatePassword(user) {
   return request({
-    url: '/sys/user/reset',
+    url: '/api/sysUser/reset',
     method: 'post',
     data: user
   })
 }
 
+export function getRoleGroupNameMap() {
+  return request({
+    url: '/api/sysUser/RoleGroupNameMap',
+    method: 'get'
+  })
+}
