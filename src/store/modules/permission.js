@@ -1,4 +1,4 @@
-import { asyncRouterMap, asyncRouterUserMap, constantRouterMap } from '@/router/router'
+import { asyncRouterMap, constantRouterMap } from '@/router/router'
 import { filterAllRouterItems } from '@/api/PermApi'
 
 /**
@@ -6,31 +6,31 @@ import { filterAllRouterItems } from '@/api/PermApi'
  * @param roles
  * @param route
  */
-function hasPermission(roles, route) {
-  if (route.meta && route.meta.role) {
-    return roles.some(role => route.meta.role.indexOf(role) >= 0)
-  } else {
-    return true
-  }
-}
+// function hasPermission(roles, route) {
+//   if (route.meta && route.meta.role) {
+//     return roles.some(role => route.meta.role.indexOf(role) >= 0)
+//   } else {
+//     return true
+//   }
+// }
 
 /**
  * 递归过滤异步路由表，返回符合用户角色权限的路由表
  * @param asyncRouterMap
  * @param roles
  */
-function filterAsyncRouter(asyncRouterMap, roles) {
-  const accessedRouters = asyncRouterMap.filter(route => {
-    if (hasPermission(roles, route)) {
-      if (route.children && route.children.length) {
-        route.children = filterAsyncRouter(route.children, roles)
-      }
-      return true
-    }
-    return false
-  })
-  return accessedRouters
-}
+// function filterAsyncRouter(asyncRouterMap, roles) {
+//   const accessedRouters = asyncRouterMap.filter(route => {
+//     if (hasPermission(roles, route)) {
+//       if (route.children && route.children.length) {
+//         route.children = filterAsyncRouter(route.children, roles)
+//       }
+//       return true
+//     }
+//     return false
+//   })
+//   return accessedRouters
+// }
 
 const permission = {
   state: {
@@ -48,17 +48,9 @@ const permission = {
   actions: {
     GenerateRoutes({ commit }, data) {
       return new Promise(resolve => {
-        const { roles } = data
-        let accessedRouters
-        if (roles.indexOf('admin') >= 0) {
-          accessedRouters = asyncRouterMap
-          var path2ObjMap = {}
-          filterAllRouterItems(asyncRouterMap, path2ObjMap)
-          console.log(path2ObjMap)
-        } else {
-          accessedRouters = filterAsyncRouter(asyncRouterMap, roles)
-          accessedRouters = asyncRouterUserMap
-        }
+        const { validRouters } = data
+        const accessedRouters = asyncRouterMap
+        filterAllRouterItems(asyncRouterMap, validRouters)
         commit('SET_ROUTERS', accessedRouters)
         resolve()
       })

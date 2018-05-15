@@ -6,7 +6,9 @@ const user = {
     token: getToken(),
     name: '',
     avatar: '',
-    roles: []
+    roles: [],
+    perms: [],
+    validRouters: []
   },
 
   mutations: {
@@ -18,6 +20,12 @@ const user = {
     },
     SET_AVATAR: (state, avatar) => {
       state.avatar = avatar
+    },
+    SET_PERMS: (state, perms) => {
+      state.perms = perms
+    },
+    SET_VALID_ROUTERS: (state, routers) => {
+      state.validRouters = routers
     },
     SET_ROLES: (state, roles) => {
       state.roles = roles
@@ -46,9 +54,11 @@ const user = {
         getInfo(state.token).then(response => {
           const data = response.data
           // fixme
-          commit('SET_ROLES', [data.username])
-          commit('SET_NAME', data.username)
-          commit('SET_AVATAR', data.username)
+          commit('SET_ROLES', data.roles)
+          commit('SET_NAME', data.user.username)
+          commit('SET_AVATAR', data.user.username)
+          commit('SET_PERMS', data.perms)
+          commit('SET_VALID_ROUTERS', data.validRouters)
           resolve(response)
         }).catch(error => {
           reject(error)
@@ -62,6 +72,8 @@ const user = {
         logout(state.token).then(() => {
           commit('SET_TOKEN', '')
           commit('SET_ROLES', [])
+          commit('SET_PERMS', [])
+          commit('SET_VALID_ROUTERS', [])
           removeToken()
           resolve()
         }).catch(error => {

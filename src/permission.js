@@ -14,8 +14,9 @@ router.beforeEach((to, from, next) => {
     } else {
       if (!store.getters.roles || store.getters.roles.length === 0) {
         store.dispatch('GetInfo').then(res => { // 拉取用户信息
-          const roles = res.data.username
-          store.dispatch('GenerateRoutes', { roles }).then(() => {
+          const roles = res.data.user.username
+          const validRouters = res.data.validRouters
+          store.dispatch('GenerateRoutes', { roles, validRouters }).then(() => {
             router.addRoutes(store.getters.addRouters)
             // next({ to })
             next({ ...to, replace: true })

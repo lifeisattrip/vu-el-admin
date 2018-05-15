@@ -71,13 +71,13 @@
 </template>
 
 <script>
-import { getUserInfo, saveUserInfo } from '../api/user_info'
-import { popDialogResult } from '../utils/dialog'
+import { getUserInfo, saveUserInfo } from '@/api/UserInfoApi'
+import { popDialogResult } from '@/utils/dialog'
 import { getGroupMap, getJobDescMap, getPositionMap } from '@/api/SysUserApi'
 import { printInfo } from '@/utils/tool'
 
 export default {
-  name: 'user_info',
+  name: 'UserInfo',
   data() {
     return {
       listLoading: true,
