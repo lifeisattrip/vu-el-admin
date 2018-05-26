@@ -42,10 +42,8 @@ export function getUserMap() {
 }
 
 export function removeUser(userId) {
-  debugger
   const ids = []
   ids.push(userId)
-  debugger
   return request({
     url: '/api/sysUser/remove',
     method: 'post',
